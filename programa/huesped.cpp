@@ -15,7 +15,7 @@ void huesped::setContrasena(const string &contra){
     contrasena=contra;
 }
 
-string huesped::leerArchivoTXT(const string& nombreArchivo) {
+string leerArchivoTXT(const string& nombreArchivo) {
     ifstream archivo(nombreArchivo); // Abrir archivo en modo lectura
     if (!archivo) {
         return "Error: No se pudo abrir el archivo.";
