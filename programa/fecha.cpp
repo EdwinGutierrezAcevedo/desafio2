@@ -52,3 +52,10 @@ bool fecha::operator<( fecha& other){
     if(dia>=other.getDia()) return false;
     return true;
 }
+short unsigned int fecha::operator-(fecha& other){
+    short unsigned int temporalAnio = anio-other.getAnio();
+    short unsigned int temporalMes = mes-other.getMes();
+    short unsigned int temporaldia = dia-other.getDia();
+    short unsigned int total = 365*temporalAnio+ 30* temporalMes + temporaldia;
+    return total;
+}
