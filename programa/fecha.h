@@ -5,13 +5,14 @@ using namespace std;
 class fecha
 {
 private:
-    short unsigned int dia,mes, anio;
+    short unsigned int duracion, dia,mes, anio;
+
 
 public:
     //fecha();
     bool fechaValida(short unsigned int dia, short unsigned int  mes, short unsigned int anio);
     bool esBisiesto(short unsigned int anio);
-    //void setFecha(short unsigned int d, short unsigned int  m, short unsigned int a);
+    void setDuracion(short unsigned int dura);
     fecha(short unsigned int d, short unsigned int  m, short unsigned int a);
     short unsigned int getDia();
     short unsigned int getMes();
@@ -21,6 +22,7 @@ public:
     unsigned int aDias() const;
     unsigned int operator-(const fecha &otra) const;
     string getDiaSemana() const;
+    bool operator==(const fecha &otra) const;
     void imprimir() const;
 
 };

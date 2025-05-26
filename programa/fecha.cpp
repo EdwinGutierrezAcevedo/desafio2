@@ -3,7 +3,11 @@
 #include "fecha.h"
 
 using namespace std;
-//fecha::fecha() {}
+
+void fecha::setDuracion(short unsigned int dura){
+    duracion=dura;
+}
+
 bool fecha::esBisiesto(short unsigned int anio) {
     return (anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0);
 }
@@ -96,6 +100,12 @@ string fecha::getDiaSemana() const {
     string dias[7] = {"Sabado", "Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes"};
     return dias[h];
 }
+
+//Método para determinar si una fecha (la cual es menor que con la que se compara) coincide con otra fecha.
+bool fecha::operator==(const fecha &otra) const{
+    return ((otra-*this)<=duracion);
+}
+
 //pasar a apartado de despliegue
 void fecha::imprimir() const {
     cout << (dia < 10 ? "0" : "") << dia << "/"
