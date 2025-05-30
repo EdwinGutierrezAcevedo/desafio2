@@ -81,17 +81,30 @@ void UdeaStay::ordenarMatrizReservacionesPorFecha(std::string** reservaciones, u
     for (unsigned int i = 0; i < n_reservaciones - 1; i++) {
         for (unsigned int j = 0; j < n_reservaciones - i - 1; j++) {
             globalIteraciones++; // Contar cada comparación
-            // Obtener la fecha de entrada de la fila j y j+1 (formato: "AAAA-MM-DD")
+#include <sstream>
+            // ...
+
+            // Obtener la fecha de entrada de la fila j y j+1 (se espera formato "AAAA-MM-DD")
             string dateStr1 = reservaciones[j][0];
             string dateStr2 = reservaciones[j+1][0];
 
-            // Extraer año, mes y día para cada fecha
-            unsigned short anio1 = static_cast<unsigned short>(stoi(dateStr1.substr(0, 4)));
-            unsigned short mes1  = static_cast<unsigned short>(stoi(dateStr1.substr(5, 2)));
-            unsigned short dia1  = static_cast<unsigned short>(stoi(dateStr1.substr(8, 2)));
-            unsigned short anio2 = static_cast<unsigned short>(stoi(dateStr2.substr(0, 4)));
-            unsigned short mes2  = static_cast<unsigned short>(stoi(dateStr2.substr(5, 2)));
-            unsigned short dia2  = static_cast<unsigned short>(stoi(dateStr2.substr(8, 2)));
+            unsigned short anio1 = 0, mes1 = 0, dia1 = 0;
+            unsigned short anio2 = 0, mes2 = 0, dia2 = 0;
+
+            istringstream iss1(dateStr1);
+            char delim; // Variable para leer el delimitador '-'
+            if (!(iss1 >> anio1 >> delim >> mes1 >> delim >> dia1)) {
+                cout << "Formato de fecha incorrecto en la reservación: " << dateStr1 << endl;
+                // Dependiendo del contexto, podrías hacer continue o manejar el error
+                // Por ejemplo, continuar con la siguiente iteración:
+                continue;
+            }
+
+            istringstream iss2(dateStr2);
+            if (!(iss2 >> anio2 >> delim >> mes2 >> delim >> dia2)) {
+                cout << "Formato de fecha incorrecto en la reservación: " << dateStr2 << endl;
+                continue;
+            }
 
             // Crear objetos fecha para la comparación
             fecha f1(dia1, mes1, anio1);
@@ -148,15 +161,21 @@ fecha UdeaStay::actualizarHistorico(std::string** &reservaciones, unsigned int &
     unsigned int k = 0;
     for (unsigned int i = 0; i < n_reservaciones; i++) {
         string dateStr = reservaciones[i][0];
-        unsigned short anioR = static_cast<unsigned short>(stoi(dateStr.substr(0, 4)));
-        unsigned short mesR  = static_cast<unsigned short>(stoi(dateStr.substr(5, 2)));
-        unsigned short diaR  = static_cast<unsigned short>(stoi(dateStr.substr(8, 2)));
+        unsigned short anioR = 0, mesR = 0, diaR = 0;
+        istringstream iss(dateStr);
+        char delim; // Para leer el caracter delimitador, que se espera que sea '-'
+
+        if (!(iss >> anioR >> delim >> mesR >> delim >> diaR)) {
+            cout << "Formato de fecha incorrecto en la reservación: " << dateStr << endl;
+            continue;  // Salta esta iteración si la fecha no se pudo parsear correctamente.
+        }
+
         fecha f(diaR, mesR, anioR);
         globalIteraciones++; // Contar cada comparación
         if (fechaCorte > f)
             k++;
         else
-            break;  // Como está ordenada, una vez que f >= fechaCorte se detiene el ciclo.
+            break;  // Como está ordenada, si se encuentra que f >= fechaCorte se detiene el ciclo.
     }
 
     // Abrir el archivo historico.txt en modo append para agregar las reservaciones.
@@ -364,4 +383,46 @@ bool UdeaStay::reescribirReservacionesTXT(string** matriz, unsigned int n_filas)
     salida.close();
     cout << "El archivo reservaciones.txt ha sido actualizado correctamente con " << n_filas << " reservaciones." << endl;
     return true;
+}
+
+
+bool UdeaStay::hayConflictoHuesped(string **reservaciones,
+                                   unsigned int numReservaciones,
+                                   const string &documento,
+                                   fecha &fechaEntrada,
+                                   unsigned int duracion) {
+    bool conflictoHuesped = false;
+
+    if (reservaciones != nullptr) {
+        for (unsigned int i = 0; i < numReservaciones; i++) {
+            // Se verifica si la reservación corresponde al huésped (columna 4)
+            if (reservaciones[i][4] == documento) {
+                // Extraer la fecha de inicio de la reservación (columna 0)
+                string fechaStr = reservaciones[i][0];
+                unsigned short rAnio = 0, rMes = 0, rDia = 0;
+
+                // Usar istringstream para separar la cadena usando el delimitador '-'
+                istringstream iss(fechaStr);
+                char delim;
+                if (!(iss >> rAnio >> delim >> rMes >> delim >> rDia)) {
+                    // Si falla el parseo de la fecha, se puede avisar o saltar este registro.
+                    cout << "Formato de fecha incorrecto en la reservación: " << fechaStr << endl;
+                    continue;
+                }
+
+                // Construir el objeto fecha con los valores extraídos.
+                fecha reservaHuesped(rDia, rMes, rAnio);
+                // La duración de la reservación (columna 1)
+                unsigned int durReserva = static_cast<unsigned int>(stoi(reservaciones[i][1]));
+
+                // Se llama al método validarFechas para determinar si hay conflicto.
+                // Se asume que validarFechas devuelve true si las fechas se superponen.
+                if (validarFechas(reservaHuesped, durReserva, fechaEntrada, duracion)) {
+                    conflictoHuesped = true;
+                    break; // Se encontró un conflicto, se rompe el ciclo.
+                }
+            }
+        }
+    }
+    return conflictoHuesped;
 }

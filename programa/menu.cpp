@@ -5,6 +5,7 @@
 #include "UdeaStay.h"      // Para cargar reservaciones y acceder al contador global de iteraciones
 #include <iostream>
 #include <string>
+#include <sstream>
 using namespace std;
 
 //////////////////////////////
@@ -114,13 +115,14 @@ void Menu::iniciar() {
     // utilizando la matriz actualizada.
 
     // Además, se muestra un resumen final (por ejemplo, iteraciones y memoria en uso).
+    user.reescribirReservacionesTXT(reservaciones,numReservaciones);
     mostrarResumenFinal();
 }
 
 // Método que pregunta al usuario su perfil (Anfitrión o Huésped)
 void Menu::seleccionarTipoUsuario() {
-    int opcion;
-    do {
+    int opcion=0;
+    while (opcion != 3){
         cout << "\n------ MENÚ PRINCIPAL -----\n";
         cout << "1. Iniciar como Anfitrión\n";
         cout << "2. Iniciar como Huésped\n";
@@ -132,23 +134,22 @@ void Menu::seleccionarTipoUsuario() {
             anfitrionMenu(reservaciones,numReservaciones);
         } else if (opcion == 2) {
             huespedMenu();
-            for (unsigned int i = 0; i < numReservaciones; i++) {
-                cout << "Reservación #" << i + 1 << ":\n";
-                cout << "  Fecha Entrada     : " << reservaciones[i][0] << "\n";
-                cout << "  Duración          : " <<reservaciones[i][1] << "\n";
-                cout << "  Código Reservación: " << reservaciones[i][2] << "\n";
-                cout << "  Código Alojamiento: " << reservaciones[i][3] << "\n";
-                cout << "  Documento Huésped : " << reservaciones[i][4] << "\n";
-                cout << "  Método de Pago    : " << reservaciones[i][5] << "\n";
-                cout << "  Fecha de Pago     : " << reservaciones[i][6] << "\n";
-                cout << "  Monto             : " << reservaciones[i][7] << "\n";
-                cout << "  Comentarios       : " << reservaciones[i][8] << "\n";
-                cout << "-------------------------------------\n";
+            for (unsigned int i=0; i<numReservacionesTotal;i++){
+            cout << "  Fecha Entrada     : " << reservaciones[i][0] << "\n";
+            cout << "  Duración          : " <<reservaciones[i][1] << "\n";
+            cout << "  Código Reservación: " << reservaciones[i][2] << "\n";
+            cout << "  Código Alojamiento: " << reservaciones[i][3] << "\n";
+            cout << "  Documento Huésped : " << reservaciones[i][4] << "\n";
+            cout << "  Método de Pago    : " << reservaciones[i][5] << "\n";
+            cout << "  Fecha de Pago     : " << reservaciones[i][6] << "\n";
+            cout << "  Monto             : " << reservaciones[i][7] << "\n";
+            cout << "  Comentarios       : " << reservaciones[i][8] << "\n";
+            cout << "-------------------------------------\n";
             }
         } else if (opcion != 3) {
             cout << "Opción inválida. Intente nuevamente." << endl;
         }
-    } while (opcion != 3);
+    }
 }
 
 // Menú específico para el anfitrión.
@@ -299,11 +300,15 @@ void Menu::huespedMenu() {
             bool conflictoAlojamiento = false;
             string codigoAlojamiento = matrizAlojamientos[i][1];
             for (unsigned int j = 0; j < numReservaciones; j++) {
-                if(reservaciones[j][3] == codigoAlojamiento) {
+                if (reservaciones[j][3] == codigoAlojamiento) {
                     string fechaStr = reservaciones[j][0];
-                    unsigned short rAnio = static_cast<unsigned short>(stoi(fechaStr.substr(0,4)));
-                    unsigned short rMes  = static_cast<unsigned short>(stoi(fechaStr.substr(5,2)));
-                    unsigned short rDia  = static_cast<unsigned short>(stoi(fechaStr.substr(8,2)));
+                    unsigned short rAnio = 0, rMes = 0, rDia = 0;
+                    istringstream iss(fechaStr);
+                    char delim;  // Variable para leer el delimitador '-'
+                    if (!(iss >> rAnio >> delim >> rMes >> delim >> rDia)) {
+                        cout << "Formato de fecha incorrecto en la reserva: " << fechaStr << endl;
+                        continue;  // Salta a la siguiente iteración si la fecha no se pudo parsear correctamente
+                    }
                     fecha fechaReserva(rDia, rMes, rAnio);
                     unsigned int durReserva = static_cast<unsigned int>(stoi(reservaciones[j][1]));
                     if (user.validarFechas(fechaReserva, durReserva, fechaEntrada, duracion)) {
@@ -379,32 +384,14 @@ void Menu::huespedMenu() {
         cout << "Precio por noche: " << matrizAlojamientos[idxAloja][7] << endl;
         cout << "Amenidades: "       << matrizAlojamientos[idxAloja][8] << endl;
     }
-
-    // Verificar que el huésped no tenga ya reservaciones en esos días, sin importar el alojamiento.
-    bool conflictoHuesped = false;
-    if(reservaciones != nullptr) {
-        for (unsigned int i = 0; i < numReservaciones; i++) {
-            if(reservaciones[i][4] == huesped->getDocumento()) {
-                string fechaStr = reservaciones[i][0];
-                unsigned short rAnio = static_cast<unsigned short>(stoi(fechaStr.substr(0,4)));
-                unsigned short rMes  = static_cast<unsigned short>(stoi(fechaStr.substr(5,2)));
-                unsigned short rDia  = static_cast<unsigned short>(stoi(fechaStr.substr(8,2)));
-                fecha reservaHuesped(rDia, rMes, rAnio);
-                unsigned int durReserva = static_cast<unsigned int>(stoi(reservaciones[i][1]));
-                if( user.validarFechas(reservaHuesped, durReserva, fechaEntrada, duracion) ) {
-                    conflictoHuesped = true;
-                    break;
-                }
-            }
-        }
-    }
-    if(conflictoHuesped) {
+    string documento=huesped->getDocumento();
+    if(user.hayConflictoHuesped(reservaciones,numReservaciones,documento,fechaEntrada,duracion)) {
         cout << "\nYa tiene reservaciones en las fechas solicitadas. No puede hacer la reserva." << endl;
         for (unsigned int i = 0; i < n_alojamientos; i++) {
             delete[] matrizAlojamientos[i];
         }
         delete[] matrizAlojamientos;
-        delete huesped;
+        //delete huesped;
         return;
     }
 
@@ -432,7 +419,7 @@ void Menu::huespedMenu() {
     huesped->agregarReserva(codigoReserva);
 
     // Agregar la nueva reservación a la matriz de reservaciones.
-    numReservaciones ++;
+
     string anioStr = to_string(fechaEntrada.getAnio());
     string fechaEntradaStr = anioStr + "-" + mesStr + "-" + to_string(fechaEntrada.getDia());
     reservaciones[numReservaciones][0] = fechaEntradaStr;
@@ -462,7 +449,12 @@ void Menu::huespedMenu() {
     cout << "Código de reserva: " << codigoReserva << endl;
     mostrarReserva(fechaEntrada, duracion);
     cout << "---------------------------------------\n";
+    numReservaciones ++;
 
+    //for (unsigned int i = 0; i < numReservaciones; i++) {
+        //cout << "Reservación #" << i + 1 << ":\n";
+
+    //}
 
 
     // Liberar memoria temporal.
@@ -471,7 +463,7 @@ void Menu::huespedMenu() {
     }
     delete[] matrizAlojamientos;
     if (opcion==3){
-        delete huesped;
+        //delete huesped;
         return;
 
     }
@@ -500,17 +492,25 @@ void Menu::mostrarReservacionesAnfitrionConFecha(const Anfitrion &anfitrion, std
 
     bool encontrado = false;
     for (unsigned int i = 0; i < n_reservaciones; i++) {
-        // Verificar que la reservación pertenezca a un alojamiento administrado por el anfitrión
+        // Verificar que la reservación pertenezca a un alojamiento administrado por el anfitrión.
         // Se utiliza el campo código de alojamiento (índice 3)
         string codAlojamiento = reservaciones[i][3];
         if (!anfitrion.gestionaAlojamiento(codAlojamiento))
             continue;
 
-        // Parsear la fecha de entrada (índice 0) – formato "AAAA-MM-DD"
+        // Parsear la fecha de entrada (índice 0) – se espera que el formato sea "AAAA-MM-DD".
         string fechaStr = reservaciones[i][0];
-        unsigned short anioRes = static_cast<unsigned short>(stoi(fechaStr.substr(0, 4)));
-        unsigned short mesRes  = static_cast<unsigned short>(stoi(fechaStr.substr(5, 2)));
-        unsigned short diaRes  = static_cast<unsigned short>(stoi(fechaStr.substr(8, 2)));
+        unsigned short anioRes = 0, mesRes = 0, diaRes = 0;
+        istringstream iss(fechaStr);
+        char delim; // Variable para leer el delimitador '-' (se ignora)
+
+        if (!(iss >> anioRes >> delim >> mesRes >> delim >> diaRes)) {
+            // Si falla el parseo, se notifica el problema y se salta este registro.
+            cout << "Formato de fecha incorrecto en la reservación: " << fechaStr << endl;
+            continue;
+        }
+
+        // Construir el objeto fecha con los valores extraídos.
         fecha fechaReserva(diaRes, mesRes, anioRes);
 
         if (fechaReserva < fechaInicio || fechaFin < fechaReserva)

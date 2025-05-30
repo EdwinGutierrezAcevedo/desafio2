@@ -36,11 +36,6 @@ public:
     // Método para agregar una nueva reserva.
     void agregarReserva(const string& codigoReserva);
 
-    // Función de autenticación:
-    // Abre un archivo con el formato:
-    // documento contraseña antiguedad puntuacion codigoReservacion1,codigoReservacion2,...,codigoReservacionN
-    // y retorna un puntero a Huesped si el documento y la contraseña coinciden.
-    // Si el huésped no tiene reservaciones, el campo final puede venir vacío.
     static Huesped* autenticar(const char* nombreArchivo, const string& doc, const string& contrasena);
 };
 

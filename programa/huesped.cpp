@@ -2,6 +2,15 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <cstdio>      // Para remove() y rename()
+#include <cstring>     // Para strcpy, strncat, strlen
+#include <cstdlib>     // Para exit() en caso de error
+using std::ifstream;
+using std::ofstream;
+using std::ios;
+using std::cout;
+using std::cerr;
+using std::endl;
 using namespace std;
 
 // Constructor
@@ -93,7 +102,6 @@ void Huesped::agregarReserva(const string& codigoReserva) {
     reservas = nuevoArreglo;
     numReservas++;
 }
-
 // Función de autenticación para Huesped.
 // Lee el archivo y, si encuentra una línea que coincide con el documento y la contraseña,
 // separa (mediante find/substr, sin usar vector) el campo de códigos de reservación.
