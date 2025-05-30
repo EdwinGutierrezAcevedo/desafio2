@@ -1,10 +1,10 @@
-#include <iostream>
-#include <string>
-#include "huesped.h"
-#include "fecha.h"
-using namespace std;
+#include "Menu.h"
 
-int main()
-{
+int main() {
+    // Instanciar el objeto Menu y llamar a su método iniciar.
+    Menu menu;
+    menu.iniciar();
+
     return 0;
 }
+

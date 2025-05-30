@@ -3,27 +3,84 @@
 #include "fecha.h"
 
 using namespace std;
-//fecha::fecha() {}
-bool fecha::esBisiesto(short unsigned int anio) {
-    return (anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0);
+
+bool fecha::fechaValida(unsigned short d, unsigned short m, unsigned short a) {
+    if(m < 1 || m > 12) return false;
+    if(d < 1) return false;
+    unsigned short maxDias = diasDelMes(m, a);
+    return (d <= maxDias);
 }
-bool fecha::fechaValida( short unsigned int dia, short unsigned int  mes, short unsigned int anio){
 
-    if(dia<1 || dia>31) return false;
-    else if(mes<1 || mes>12 ) return false;
+// Método auxiliar que retorna cuántos días tiene el mes 'm' en el año 'a'
+unsigned short fecha::diasDelMes(unsigned short m, unsigned short a) const {
+    switch(m) {
+    case 1:  return 31;
+    case 2:  {
+        // Año bisiesto: divisible por 4, pero los centenarios deben ser divisibles por 400.
+        if ((a % 4 == 0 && a % 100 != 0) || (a % 400 == 0))
+            return 29;
+        else
+            return 28;
+    }
+    case 3:  return 31;
+    case 4:  return 30;
+    case 5:  return 31;
+    case 6:  return 30;
+    case 7:  return 31;
+    case 8:  return 31;
+    case 9:  return 30;
+    case 10: return 31;
+    case 11: return 30;
+    case 12: return 31;
+    default: return 30; // De forma segura (aunque no se debería llegar aquí)
+    }
+}
 
-    else switch (mes){
-        case 4: case 6: case 9: case 11:
-            if(dia>30) return false;
-            break;
-        case 2:
-            if(dia>29) return false;
-            if((dia==29 && !esBisiesto(anio))) return false;
-            break;
+// Retorna el nombre del mes en minúsculas
+string fecha::getNombreMes() const {
+    switch(mes) {
+    case 1:  return "enero";
+    case 2:  return "febrero";
+    case 3:  return "marzo";
+    case 4:  return "abril";
+    case 5:  return "mayo";
+    case 6:  return "junio";
+    case 7:  return "julio";
+    case 8:  return "agosto";
+    case 9:  return "septiembre";
+    case 10: return "octubre";
+    case 11: return "noviembre";
+    case 12: return "diciembre";
+    default: return "desconocido";
+    }
+}
 
+// Calcula la fecha de salida sumando "duracion" días a la fecha actual,
+// usando el número real de días que tiene cada mes.
+fecha fecha::obtenerFechaSalida(unsigned int duracion) const {
+    unsigned short d = dia;
+    unsigned short m = mes;
+    unsigned short a = anio;
+
+    while(duracion > 0) {
+        unsigned short diasMes = diasDelMes(m, a);
+        // Si al sumar la duracion no se excede el mes actual:
+        if(d + duracion <= diasMes) {
+            d += duracion;
+            duracion = 0;
+        } else {
+            // Restamos los días restantes del mes y avanzamos al mes siguiente
+            unsigned int restante = diasMes - d + 1; // días que faltan para terminar el mes
+            duracion -= restante;
+            d = 1;
+            m++;
+            if(m > 12) {
+                m = 1;
+                a++;
+            }
         }
-    return true;
-
+    }
+    return fecha(d, m, a);
 }
 //setters
 fecha::fecha(short unsigned int d, short unsigned int  m, short unsigned int a){
@@ -38,31 +95,29 @@ fecha::fecha(short unsigned int d, short unsigned int  m, short unsigned int a){
     }
 
 }
-//getters
-short unsigned int fecha::getDia(){
-    return dia;
-}
-short unsigned int fecha::getMes(){
-    return mes;
-}
-short unsigned int fecha::getAnio(){
-    return anio;
-}
-bool fecha::operator<( fecha& other){
-    if(anio>other.getAnio()) return false;
-    if(mes>other.getMes()) return false;
-    if(dia>=other.getDia()) return false;
-    return true;
+
+bool fecha::operator<(fecha &other) {
+    if(anio < other.getAnio())
+        return true;
+    if(anio > other.getAnio())
+        return false;
+    // Años iguales; comparar meses:
+    if(mes < other.getMes())
+        return true;
+    if(mes > other.getMes())
+        return false;
+    // Años y meses iguales; comparar días:
+    return dia < other.getDia();
 }
 
-bool fecha::operator>( fecha& other){
-    if(anio<other.getAnio()) return false;
-    if(mes<other.getMes()) return false;
-    if(dia<=other.getDia()) return false;
-    return true;
+bool fecha::operator>( fecha& other) {
+    // Una forma sencilla es definirlo en función del operador <:
+    return other < *this;
 }
 
- // Convierte la fecha a un número entero de días usando la fórmula del día juliano.
+
+
+// Convierte la fecha a un número entero de días usando la fórmula del día juliano.
 unsigned int fecha::aDias() const {
     int a = (14 - mes) / 12;
     int y = anio + 4800 - a;
@@ -95,10 +150,4 @@ string fecha::getDiaSemana() const {
     int h = (d + (13 * (m + 1)) / 5 + K + (K / 4) + (J / 4) + 5 * J) % 7;
     string dias[7] = {"Sabado", "Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes"};
     return dias[h];
-}
-//pasar a apartado de despliegue
-void fecha::imprimir() const {
-    cout << (dia < 10 ? "0" : "") << dia << "/"
-              << (mes < 10 ? "0" : "") << mes << "/"
-              << anio;
 }

@@ -7,9 +7,13 @@ SOURCES += \
         anfitrion.cpp \
         fecha.cpp \
         huesped.cpp \
-        main.cpp
+        main.cpp \
+        menu.cpp \
+        udeastay.cpp
 
 HEADERS += \
     anfitrion.h \
     fecha.h \
-    huesped.h
+    huesped.h \
+    menu.h \
+    udeastay.h
