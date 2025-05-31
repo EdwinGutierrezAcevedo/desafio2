@@ -47,7 +47,7 @@ fecha Menu::leerFechaValida(const string &mensaje) {
         cin >> d >> m >> a;
         ftemp = fecha(d, m, a); // Si la fecha es inválida, el constructor asigna 0 a sus atributos.
         if (ftemp.getDia() == 0 && ftemp.getMes() == 0 && ftemp.getAnio() == 0) {
-            cout << "Error: La fecha ingresada es inv\u00E1lida. Por favor, ingrese una fecha correcta." << endl;
+            cout << "Error: La fecha ingresada es invalida. Por favor, ingrese una fecha correcta." << endl;
         }
         else {
             valido = true;
@@ -61,7 +61,7 @@ fecha Menu::leerFechaValida(const string &mensaje, fecha &maxAllowed) {
     fecha ftemp = leerFechaValida(mensaje);
     // Suponiendo que se hayan sobrecargado los operadores de comparación (<, >) en la clase fecha.
     while(ftemp > maxAllowed) {
-        cout << "Error: La fecha ingresada excede el límite permitido ("
+        cout << "Error: La fecha ingresada excede el limite permitido ("
              << maxAllowed.getDia() << "/" << maxAllowed.getMes() << "/" << maxAllowed.getAnio()
              << ")." << endl;
         ftemp = leerFechaValida(mensaje, maxAllowed); // Volvemos a pedir la fecha
@@ -83,7 +83,7 @@ void Menu::mostrarReserva( fecha &fechaInicio, unsigned int duracion) const {
     fecha fechaFin = fechaInicio.obtenerFechaSalida(duracion);
     cout << "Fecha de inicio de la reserva: ";
     mostrarFecha(fechaInicio);
-    cout << "\nFecha de finalización de la reserva: ";
+    cout << "\nFecha de finalizacion de la reserva: ";
     mostrarFecha(fechaFin);
     cout << "\n";
 }
@@ -99,7 +99,7 @@ void Menu::mostrarResumenFinal() {
     unsigned long memoriaLocales = sizeof(unsigned int) + sizeof(char*);
     unsigned long totalMemoria = memoriaDinamica + memoriaUdeaStay + memoriaLocales;
 
-    cout << "\n--- Resumen Final de la Operación ---" << endl;
+    cout << "\n--- Resumen Final de la Operacion ---" << endl;
     cout << "Iteraciones requeridas: " << UdeaStay::globalIteraciones << " iteraciones." << endl;
     cout << "Memoria en uso (aproximada): " << totalMemoria << " bytes." << endl;
 
@@ -123,31 +123,19 @@ void Menu::iniciar() {
 void Menu::seleccionarTipoUsuario() {
     int opcion=0;
     while (opcion != 3){
-        cout << "\n------ MENÚ PRINCIPAL -----\n";
-        cout << "1. Iniciar como Anfitrión\n";
-        cout << "2. Iniciar como Huésped\n";
+        cout << "\n------ MENU PRINCIPAL -----\n";
+        cout << "1. Iniciar como Anfitrion\n";
+        cout << "2. Iniciar como Huesped\n";
         cout << "3. Salir\n";
-        cout << "Ingrese su opción: ";
+        cout << "Ingrese su opcion: ";
         cin >> opcion;
         cin.ignore();
         if (opcion == 1) {
             anfitrionMenu(reservaciones,numReservaciones);
         } else if (opcion == 2) {
             huespedMenu();
-            for (unsigned int i=0; i<numReservacionesTotal;i++){
-            cout << "  Fecha Entrada     : " << reservaciones[i][0] << "\n";
-            cout << "  Duración          : " <<reservaciones[i][1] << "\n";
-            cout << "  Código Reservación: " << reservaciones[i][2] << "\n";
-            cout << "  Código Alojamiento: " << reservaciones[i][3] << "\n";
-            cout << "  Documento Huésped : " << reservaciones[i][4] << "\n";
-            cout << "  Método de Pago    : " << reservaciones[i][5] << "\n";
-            cout << "  Fecha de Pago     : " << reservaciones[i][6] << "\n";
-            cout << "  Monto             : " << reservaciones[i][7] << "\n";
-            cout << "  Comentarios       : " << reservaciones[i][8] << "\n";
-            cout << "-------------------------------------\n";
-            }
         } else if (opcion != 3) {
-            cout << "Opción inválida. Intente nuevamente." << endl;
+            cout << "Opción invalida. Intente nuevamente." << endl;
         }
     }
 }
@@ -156,10 +144,10 @@ void Menu::seleccionarTipoUsuario() {
 void Menu::anfitrionMenu(string ** &reservaciones,  unsigned int & numReservaciones) {
     // Solicitar credenciales para iniciar sesión.
     string doc, pass;
-    cout << "\n--- Autenticación del Anfitrión ---" << endl;
+    cout << "\n--- Autenticacion del Anfitrion ---" << endl;
     cout << "Ingrese su documento: ";
     cin >> doc;
-    cout << "Ingrese su contraseña: ";
+    cout << "Ingrese su contrasena: ";
     cin >> pass;
     cin.ignore();  // Limpiar buffer
 
@@ -167,20 +155,20 @@ void Menu::anfitrionMenu(string ** &reservaciones,  unsigned int & numReservacio
     // y que su método estático autenticar() asigna y retorna el objeto autenticado.
     anfitrion = Anfitrion::autenticar("anfitrion.txt", doc, pass);
     if (anfitrion == nullptr) {
-        cout << "Credenciales incorrectas o anfitrión no encontrado." << endl;
+        cout << "Credenciales incorrectas o anfitrion no encontrado." << endl;
         return;
     }
-    cout << "Autenticación exitosa. Bienvenido, "
+    cout << "Autenticacion exitosa. Bienvenido, "
          << anfitrion->getDocumento() << "\n" << endl;
 
     int opcion = 0;
     do {
-        cout << "\n--- Menú Anfitrión ---" << endl;
-        cout << "1. Anular reservación" << endl;
+        cout << "\n--- Menu Anfitrion ---" << endl;
+        cout << "1. Anular reservacion" << endl;
         cout << "2. Consultar reservaciones de mis alojamientos" << endl;
-        cout << "3. Actualizar histórico" << endl;
-        cout << "4. Salir al menú principal" << endl;
-        cout << "Ingrese la opción deseada: ";
+        cout << "3. Actualizar historico" << endl;
+        cout << "4. Salir al menu principal" << endl;
+        cout << "Ingrese la opcion deseada: ";
         cin >> opcion;
         cin.ignore();  // Limpiar el buffer
 
@@ -197,16 +185,16 @@ void Menu::anfitrionMenu(string ** &reservaciones,  unsigned int & numReservacio
             // Opción de actualizar el histórico.
             user.ordenarMatrizReservacionesPorFecha(reservaciones, numReservaciones);
             fecha fechaCorte = user.actualizarHistorico(reservaciones, numReservaciones);
-            cout << "\nHistórico actualizado. Fecha de corte utilizada: "
+            cout << "\nHistorico actualizado. Fecha de corte utilizada: "
                  << fechaCorte.getDia() << "/" << fechaCorte.getMes() << "/"
                  << fechaCorte.getAnio() << endl;
             break;
         }
         case 4:
-            cout << "\nRegresando al menú principal..." << endl;
+            cout << "\nRegresando al menu principal..." << endl;
             break;
         default:
-            cout << "\nOpción inválida en el menú de anfitrión." << endl;
+            cout << "\nOpción invalida en el menu de anfitrion." << endl;
             break;
         }
     } while (opcion != 4);
@@ -220,25 +208,25 @@ void Menu::anfitrionMenu(string ** &reservaciones,  unsigned int & numReservacio
 void Menu::huespedMenu() {
     // Autenticación del huésped.
     string doc, pass;
-    cout << "\n--- Autenticación del Huésped ---" << endl;
+    cout << "\n--- Autenticacion del Huesped ---" << endl;
     cout << "Ingrese su documento: ";
     cin >> doc;
-    cout << "Ingrese su contraseña: ";
+    cout << "Ingrese su contrasena: ";
     cin >> pass;
 
     Huesped* huesped = Huesped::autenticar("huesped.txt", doc, pass);
     if (huesped == nullptr) {
-        cout << "Credenciales incorrectas o huésped no encontrado." << endl;
+        cout << "Credenciales incorrectas o huesped no encontrado." << endl;
         return;
     }
     cout << "Autenticación exitosa. Bienvenido, " << huesped->getDocumento() << "\n" << endl;
     int opcion=0;
     // Presentar submenú de funcionalidades.
-    cout << "--- Funcionalidades del Huésped ---" << endl;
+    cout << "--- Funcionalidades del Huesped ---" << endl;
     cout << "1. Reservar alojamiento por municipio" << endl;
-    cout << "2. Reservar alojamiento por código" << endl;
+    cout << "2. Reservar alojamiento por codigo" << endl;
     cout << "3. Salir" << endl;
-    cout << "Ingrese su opción: ";
+    cout << "Ingrese su opcion: ";
 
     cin >> opcion;
     cin.ignore();  // Limpiar el buffer
@@ -247,10 +235,10 @@ void Menu::huespedMenu() {
     fecha fechaMaxima(fechaCorte.getDia(), fechaCorte.getMes(), fechaCorte.getAnio() + 1);
 
     // Ahora, se utiliza la versión sobrecargada de leerFechaValida para asegurar no exceder fechaMaxima.
-    fecha fechaEntrada = leerFechaValida("Ingrese la fecha de entrada (día mes año): ", fechaMaxima);
+    fecha fechaEntrada = leerFechaValida("Ingrese la fecha de entrada (dia mes ano): ", fechaMaxima);
 
     unsigned int duracion;
-    cout << "Ingrese la duración (en noches): ";
+    cout << "Ingrese la duracion (en noches): ";
     cin >> duracion;
 
     // Cargar la matriz de alojamientos y de reservaciones.
@@ -274,10 +262,10 @@ void Menu::huespedMenu() {
         // Preguntar si desea aplicar un filtro del costo máximo por noche.
         char aplicarFiltro;
         double costoMaximo = 0;
-        cout << "¿Desea aplicar un filtro de costo máximo por noche? (S/N): ";
+        cout << "Desea aplicar un filtro de costo maximo por noche? (S/N): ";
         cin >> aplicarFiltro;
         if(tolower(aplicarFiltro) == 's'){
-            cout << "Ingrese el costo máximo por noche: ";
+            cout << "Ingrese el costo maximo por noche: ";
             cin >> costoMaximo;
         }
         cin.ignore(); // Limpiar buffer después de leer el número
@@ -319,14 +307,14 @@ void Menu::huespedMenu() {
             }
             if(!conflictoAlojamiento) {
                 indicesDisponibles[contDisponibles++] = i;
-                cout << "\nOpción " << contDisponibles << ":" << endl;
+                cout << "\nOpcion " << contDisponibles << ":" << endl;
                 cout << "Nombre: "           << matrizAlojamientos[i][0] << endl;
-                cout << "Código: "           << matrizAlojamientos[i][1] << endl;
-                cout << "Anfitrión: "        << matrizAlojamientos[i][2] << endl;
+                cout << "Codigo: "           << matrizAlojamientos[i][1] << endl;
+                cout << "Anfitrion: "        << matrizAlojamientos[i][2] << endl;
                 cout << "Departamento: "     << matrizAlojamientos[i][3] << endl;
                 cout << "Municipio: "        << matrizAlojamientos[i][4] << endl;
                 cout << "Tipo: "             << matrizAlojamientos[i][5] << endl;
-                cout << "Dirección: "        << matrizAlojamientos[i][6] << endl;
+                cout << "Direccion: "        << matrizAlojamientos[i][6] << endl;
                 cout << "Precio por noche: " << matrizAlojamientos[i][7] << endl;
                 cout << "Amenidades: "       << matrizAlojamientos[i][8] << endl;
             }
@@ -342,11 +330,11 @@ void Menu::huespedMenu() {
             delete huesped;
             return;
         }
-        cout << "\nIngrese el número de la opción que desea reservar: ";
+        cout << "\nIngrese el numero de la opcion que desea reservar: ";
         unsigned int seleccion;
         cin >> seleccion;
         while(seleccion < 1 || seleccion > contDisponibles) {
-            cout << "Opción inválida. Ingrese nuevamente: ";
+            cout << "Opcion invalida. Ingrese nuevamente: ";
             cin >> seleccion;
         }
         idxAloja = indicesDisponibles[seleccion - 1];
@@ -356,7 +344,7 @@ void Menu::huespedMenu() {
         // Búsqueda por código del alojamiento.
         cin.ignore();
         string codigoBuscado;
-        cout << "\nIngrese el código del alojamiento: ";
+        cout << "\nIngrese el codigo del alojamiento: ";
         getline(cin, codigoBuscado);
         for (unsigned int i = 0; i < n_alojamientos; i++) {
             if(matrizAlojamientos[i][1] == codigoBuscado) {
@@ -365,7 +353,7 @@ void Menu::huespedMenu() {
             }
         }
         if(idxAloja == -1) {
-            cout << "\nNo se encontró un alojamiento con el código " << codigoBuscado << endl;
+            cout << "\nNo se encontro un alojamiento con el codigo " << codigoBuscado << endl;
             for (unsigned int i = 0; i < n_alojamientos; i++) {
                 delete[] matrizAlojamientos[i];
             }
@@ -375,12 +363,12 @@ void Menu::huespedMenu() {
         }
         cout << "\nAlojamiento encontrado:" << endl;
         cout << "Nombre: "           << matrizAlojamientos[idxAloja][0] << endl;
-        cout << "Código: "           << matrizAlojamientos[idxAloja][1] << endl;
-        cout << "Anfitrión: "        << matrizAlojamientos[idxAloja][2] << endl;
+        cout << "Codigo: "           << matrizAlojamientos[idxAloja][1] << endl;
+        cout << "Anfitrion: "        << matrizAlojamientos[idxAloja][2] << endl;
         cout << "Departamento: "     << matrizAlojamientos[idxAloja][3] << endl;
         cout << "Municipio: "        << matrizAlojamientos[idxAloja][4] << endl;
         cout << "Tipo: "             << matrizAlojamientos[idxAloja][5] << endl;
-        cout << "Dirección: "        << matrizAlojamientos[idxAloja][6] << endl;
+        cout << "Direccion: "        << matrizAlojamientos[idxAloja][6] << endl;
         cout << "Precio por noche: " << matrizAlojamientos[idxAloja][7] << endl;
         cout << "Amenidades: "       << matrizAlojamientos[idxAloja][8] << endl;
     }
@@ -404,15 +392,15 @@ void Menu::huespedMenu() {
     // Solicitar datos adicionales para la reserva.
     cin.ignore();
     string metodoPago;
-    cout << "Ingrese el método de pago (ej: PSE, TCredito): ";
+    cout << "Ingrese el metodo de pago (ej: PSE, TCredito): ";
     getline(cin, metodoPago);
 
     string comentarios;
     do {
-        cout << "Ingrese comentarios (opcional, máximo 1000 caracteres): ";
+        cout << "Ingrese comentarios (opcional, maximo 1000 caracteres): ";
         getline(cin, comentarios);
         if (comentarios.size() > 1000)
-            cout << "Error: Los comentarios deben tener como máximo 1000 caracteres. Por favor, ingrese nuevamente." << endl;
+            cout << "Error: Los comentarios deben tener como maximo 1000 caracteres. Por favor, ingrese nuevamente." << endl;
     } while(comentarios.size() > 1000);
 
     // Agregar el código de la reserva al arreglo de reservas del huésped.
@@ -423,30 +411,21 @@ void Menu::huespedMenu() {
     string anioStr = to_string(fechaEntrada.getAnio());
     string fechaEntradaStr = anioStr + "-" + mesStr + "-" + to_string(fechaEntrada.getDia());
     reservaciones[numReservaciones][0] = fechaEntradaStr;
-    cout << "  Fecha Entrada     : " << reservaciones[numReservaciones][0] << "\n";
     reservaciones[numReservaciones][1] = to_string(duracion);
-    cout << "  duracion     : " << reservaciones[numReservaciones][1] << "\n";
     reservaciones[numReservaciones][2] = codigoReserva;
-    cout << "  codigoRes     : " << reservaciones[numReservaciones][2] << "\n";
     reservaciones[numReservaciones][3] = codigoAlojamientoSeleccionado;
-    cout << "  codAloja     : " << reservaciones[numReservaciones][3] << "\n";
     reservaciones[numReservaciones][4] = huesped->getDocumento();
-    cout << "  Doc     : " << reservaciones[numReservaciones][4] << "\n";
     reservaciones[numReservaciones][5] = metodoPago;
-    cout << "  MetPago     : " << reservaciones[numReservaciones][5] << "\n";
     reservaciones[numReservaciones][6] = "";
-    cout << "  fechaPago    : " << reservaciones[numReservaciones][6] << "\n";
     reservaciones[numReservaciones][7] = "0";
-    cout << "  monto    : " << reservaciones[numReservaciones][7] << "\n";
     reservaciones[numReservaciones][8] = comentarios;
-    cout << "  coment    : " << reservaciones[numReservaciones][8] << "\n";
 
-    cout << "\nReserva realizada con éxito." << endl;
+    cout << "\nReserva realizada con exito." << endl;
 
     // Mostrar la reserva (fecha inicio y fecha final) con el formato requerido.
     cout << "\n---------------------------------------\n";
     cout << "Datos de la reserva:" << endl;
-    cout << "Código de reserva: " << codigoReserva << endl;
+    cout << "Codigo de reserva: " << codigoReserva << endl;
     mostrarReserva(fechaEntrada, duracion);
     cout << "---------------------------------------\n";
     numReservaciones ++;
@@ -475,15 +454,15 @@ void Menu::mostrarReservacionesAnfitrionConFecha(const Anfitrion &anfitrion, std
     unsigned short diaIni, mesIni, anioIni;
     unsigned short diaFin, mesFin, anioFin;
 
-    cout << "\nIngrese la fecha de inicio (día, mes, año, separados por espacios): ";
+    cout << "\nIngrese la fecha de inicio (dia, mes, ano, separados por espacios): ";
     cin >> diaIni >> mesIni >> anioIni;
     fecha fechaInicio(diaIni, mesIni, anioIni);
 
-    cout << "Ingrese la fecha de fin (día, mes, año, separados por espacios): ";
+    cout << "Ingrese la fecha de fin (dia, mes, ano, separados por espacios): ";
     cin >> diaFin >> mesFin >> anioFin;
     fecha fechaFin(diaFin, mesFin, anioFin);
 
-    cout << "\nReservaciones para el Anfitrión (Documento: "
+    cout << "\nReservaciones para el Anfitrion (Documento: "
          << anfitrion.getDocumento() << ") en el rango "
          << fechaInicio.getDia() << "/" << fechaInicio.getMes() << "/" << fechaInicio.getAnio()
          << " - "
@@ -506,7 +485,7 @@ void Menu::mostrarReservacionesAnfitrionConFecha(const Anfitrion &anfitrion, std
 
         if (!(iss >> anioRes >> delim >> mesRes >> delim >> diaRes)) {
             // Si falla el parseo, se notifica el problema y se salta este registro.
-            cout << "Formato de fecha incorrecto en la reservación: " << fechaStr << endl;
+            cout << "Formato de fecha incorrecto en la reservacion: " << fechaStr << endl;
             continue;
         }
 
@@ -517,32 +496,36 @@ void Menu::mostrarReservacionesAnfitrionConFecha(const Anfitrion &anfitrion, std
             continue;
 
         // Imprimir los detalles de la reservación
-        cout << "Reservación " << i + 1 << ":" << endl;
+        cout << "Reservacion " << i + 1 << ":" << endl;
         cout << "  Fecha Entrada:       " << reservaciones[i][0] << endl;
-        cout << "  Duración:            " << reservaciones[i][1] << endl;
-        cout << "  Código Reservación:  " << reservaciones[i][2] << endl;
-        cout << "  Código Alojamiento:  " << reservaciones[i][3] << endl;
+        cout << "  Duracion:            " << reservaciones[i][1] << endl;
+        cout << "  Codigo Reservación:  " << reservaciones[i][2] << endl;
+        cout << "  Codigo Alojamiento:  " << reservaciones[i][3] << endl;
         cout << "  Documento Huésped:   " << reservaciones[i][4] << endl;
-        cout << "  Método de Pago:      " << reservaciones[i][5] << endl;
+        cout << "  Metodo de Pago:      " << reservaciones[i][5] << endl;
         cout << "  Fecha de Pago:       " << reservaciones[i][6] << endl;
         cout << "  Monto:               " << reservaciones[i][7] << endl;
         cout << "  Comentarios:         " << reservaciones[i][8] << "\n" << endl;
         encontrado = true;
     }
     if (!encontrado)
-        cout << "No se encontraron reservaciones para los alojamientos del Anfitrión en el rango especificado." << endl;
+        cout << "No se encontraron reservaciones para los alojamientos del Anfitrion en el rango especificado." << endl;
 }
 
 void Menu::eliminarReservacion() {
     string codigoAlojamiento;
-    cout << "\nIngrese el código del alojamiento de la reservación a eliminar: ";
+    cout << "\nIngrese el codigo del alojamiento de la reservacion a eliminar: ";
     getline(cin, codigoAlojamiento);
     if(user.eliminarReservacionPorAlojamiento(codigoAlojamiento, reservaciones, numReservaciones)) {
+        cout << "Reservacion para el alojamiento con codigo " << codigoAlojamiento
+             << " eliminada en memoria exitosamente." << endl;
+        cout << "Nuevo total de reservaciones en memoria: " << numReservaciones << endl;
+
         // Para actualizar la matriz local de Menu se puede recargar, si así se desea.
         // Por ejemplo:
-        delete[] reservaciones;  // Libera el arreglo de punteros (las filas eliminadas ya se liberaron internamente)
-        reservaciones = user.cargarMatrizReservaciones("reservaciones.txt", numReservaciones,numReservacionesTotal);
+        //delete[] reservaciones;  // Libera el arreglo de punteros (las filas eliminadas ya se liberaron internamente)
+        //reservaciones = user.cargarMatrizReservaciones("reservaciones.txt", numReservaciones,numReservacionesTotal);
     } else {
-        cout << "No se pudo eliminar la reservación." << endl;
+        cout << "No se pudo eliminar la reservacion." << endl;
     }
 }

@@ -119,19 +119,6 @@ void UdeaStay::ordenarMatrizReservacionesPorFecha(std::string** reservaciones, u
             }
         }
     }
-    for (unsigned int i = 0; i < n_reservaciones; i++) {
-        cout << "Reservación #" << i + 1 << ":\n";
-        cout << "  Fecha Entrada     : " << reservaciones[i][0] << "\n";
-        cout << "  Duración          : " <<reservaciones[i][1] << "\n";
-        cout << "  Código Reservación: " << reservaciones[i][2] << "\n";
-        cout << "  Código Alojamiento: " << reservaciones[i][3] << "\n";
-        cout << "  Documento Huésped : " << reservaciones[i][4] << "\n";
-        cout << "  Método de Pago    : " << reservaciones[i][5] << "\n";
-        cout << "  Fecha de Pago     : " << reservaciones[i][6] << "\n";
-        cout << "  Monto             : " << reservaciones[i][7] << "\n";
-        cout << "  Comentarios       : " << reservaciones[i][8] << "\n";
-        cout << "-------------------------------------\n";
-    }
 
 }
 
@@ -151,7 +138,7 @@ unsigned long UdeaStay::getMemoriaUso() const {
 fecha UdeaStay::actualizarHistorico(std::string** &reservaciones, unsigned int &n_reservaciones) {
     // Solicitar al anfitrión la fecha de corte:
     unsigned short dia, mes, anio;
-    cout << "\nIngrese la fecha de corte para actualizar histórico (día mes año): ";
+    cout << "\nIngrese la fecha de corte para actualizar historico (dia mes ano): ";
     cin >> dia >> mes >> anio;
     // Contar iteración de entrada (opcional)
     globalIteraciones++;
@@ -166,7 +153,7 @@ fecha UdeaStay::actualizarHistorico(std::string** &reservaciones, unsigned int &
         char delim; // Para leer el caracter delimitador, que se espera que sea '-'
 
         if (!(iss >> anioR >> delim >> mesR >> delim >> diaR)) {
-            cout << "Formato de fecha incorrecto en la reservación: " << dateStr << endl;
+            cout << "Formato de fecha incorrecto en la reservacion: " << dateStr << endl;
             continue;  // Salta esta iteración si la fecha no se pudo parsear correctamente.
         }
 
@@ -213,18 +200,6 @@ fecha UdeaStay::actualizarHistorico(std::string** &reservaciones, unsigned int &
         globalIteraciones++;  // Contar cada desplazamiento
     }
     n_reservaciones -= k;  // Actualizar el número total de reservaciones
-
-    /* Calcular la memoria aproximada actual de la matriz (después de la eliminación)
-    unsigned long memoriaPunteros = n_reservaciones * sizeof(string*);
-    unsigned long memoriaFilas = n_reservaciones * 9 * sizeof(string);
-    unsigned long totalMemoria = memoriaPunteros + memoriaFilas;
-
-    // Utilizar el método mostrarResumenFinal de la clase Menu para mostrar el resumen de la operación.
-    Menu m;
-    m.mostrarResumenFinal("Actualización del Histórico", totalMemoria);
-
-     Retornar la fecha de corte, ya que se usará para otras funcionalidades.
-    */
     return fechaCorte;
 }
 
@@ -307,7 +282,7 @@ std::string** UdeaStay::cargarMatrizAlojamientos(const char* nombreArchivo, unsi
     return matriz;
 }
 
-bool UdeaStay::eliminarReservacionPorAlojamiento(const string &codigoAlojamiento, string**matrizReservaciones,unsigned int n_reservaciones) {
+bool UdeaStay::eliminarReservacionPorAlojamiento(const string &codigoAlojamiento, string**matrizReservaciones,unsigned int & n_reservaciones) {
     //unsigned int n_reservaciones = 0;
     //string** matrizReservaciones = cargarMatrizReservaciones("reservaciones.txt", n_reservaciones);
     //if(matrizReservaciones == nullptr) {
@@ -318,14 +293,16 @@ bool UdeaStay::eliminarReservacionPorAlojamiento(const string &codigoAlojamiento
     int indiceEliminar = -1;
     // Se asume que la columna 3 (índice 3) contiene el código del alojamiento.
     for (unsigned int i = 0; i < n_reservaciones; i++) {
-        if(matrizReservaciones[i][3] == codigoAlojamiento) {
+        cout<<matrizReservaciones[i][2]<<endl;
+        if(matrizReservaciones[i][2] == codigoAlojamiento) {
+            cout<<matrizReservaciones[i][2]<<endl;
             indiceEliminar = static_cast<int>(i);
             break;
         }
     }
 
     if(indiceEliminar == -1) {
-        cout << "No se encontró una reservación para el alojamiento con código "
+        cout << "No se encontro una reservacion para el alojamiento con codigo "
              << codigoAlojamiento << endl;
         // Liberar la matriz original.
         for (unsigned int i = 0; i < n_reservaciones; i++) {
@@ -343,13 +320,10 @@ bool UdeaStay::eliminarReservacionPorAlojamiento(const string &codigoAlojamiento
         matrizReservaciones[i] = matrizReservaciones[i + 1];
     }
     // Se actualiza el número de filas válidas.
-    unsigned int n_nueva = n_reservaciones - 1;
+    n_reservaciones --;
     // Pone el último puntero a nullptr (ya que ahora ese espacio está libre).
-    matrizReservaciones[n_nueva] = nullptr;
+    matrizReservaciones[n_reservaciones] = nullptr;
 
-    cout << "Reservación para el alojamiento con código " << codigoAlojamiento
-         << " eliminada en memoria exitosamente." << endl;
-    cout << "Nuevo total de reservaciones en memoria: " << n_nueva << endl;
 
     // **Importante:** No se reescribe el archivo aquí y tampoco se libera la memoria del arreglo
     // (excepto la fila eliminada). Se asume que este arreglo modificado se mantendrá en memoria
@@ -406,7 +380,7 @@ bool UdeaStay::hayConflictoHuesped(string **reservaciones,
                 char delim;
                 if (!(iss >> rAnio >> delim >> rMes >> delim >> rDia)) {
                     // Si falla el parseo de la fecha, se puede avisar o saltar este registro.
-                    cout << "Formato de fecha incorrecto en la reservación: " << fechaStr << endl;
+                    cout << "Formato de fecha incorrecto en la reservacion: " << fechaStr << endl;
                     continue;
                 }
 

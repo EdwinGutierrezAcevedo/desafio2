@@ -31,7 +31,7 @@ public:
                        fecha &f2, unsigned int dur2);
 
     std::string** cargarMatrizAlojamientos(const char* nombreArchivo, unsigned int &n_alojamientos);
-    bool eliminarReservacionPorAlojamiento(const string &codigoAlojamiento, string **matrizReservaciones, unsigned int n_reservaciones);
+    bool eliminarReservacionPorAlojamiento(const string &codigoAlojamiento, string **matrizReservaciones, unsigned int &n_reservaciones);
     bool reescribirReservacionesTXT(string** matriz, unsigned int n_filas);
     bool hayConflictoHuesped(string **reservaciones,
                              unsigned int numReservaciones,
