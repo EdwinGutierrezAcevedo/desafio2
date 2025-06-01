@@ -2,6 +2,7 @@
 #define ANFITRION_H
 
 #include <string>
+#include "udeastay.h"
 using std::string;
 
 class Anfitrion {

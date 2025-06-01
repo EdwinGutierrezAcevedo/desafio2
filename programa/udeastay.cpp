@@ -141,7 +141,6 @@ fecha UdeaStay::actualizarHistorico(std::string** &reservaciones, unsigned int &
     cout << "\nIngrese la fecha de corte para actualizar historico (dia mes ano): ";
     cin >> dia >> mes >> anio;
     // Contar iteración de entrada (opcional)
-    globalIteraciones++;
     fecha fechaCorte(dia, mes, anio);
 
     // Debido a que la matriz está ordenada por fecha, se cuentan las reservaciones con fecha menor que la fecha de corte.
@@ -248,6 +247,7 @@ std::string** UdeaStay::cargarMatrizAlojamientos(const char* nombreArchivo, unsi
     while(getline(file, line)) {
         if(!line.empty())
             n_alojamientos++;
+        globalIteraciones++;
     }
 
     // Volver al inicio del archivo
@@ -258,6 +258,7 @@ std::string** UdeaStay::cargarMatrizAlojamientos(const char* nombreArchivo, unsi
     string** matriz = new string*[n_alojamientos];
     for (unsigned int i = 0; i < n_alojamientos; i++) {
         matriz[i] = new string[9];
+        globalIteraciones++;
     }
 
     unsigned int row = 0;
@@ -274,6 +275,7 @@ std::string** UdeaStay::cargarMatrizAlojamientos(const char* nombreArchivo, unsi
             matriz[row][col] = token;
             col++;
             startPos = pos + 1;
+            globalIteraciones++;
         }
         row++;
     }
@@ -283,19 +285,12 @@ std::string** UdeaStay::cargarMatrizAlojamientos(const char* nombreArchivo, unsi
 }
 
 bool UdeaStay::eliminarReservacionPorAlojamiento(const string &codigoAlojamiento, string**matrizReservaciones,unsigned int & n_reservaciones) {
-    //unsigned int n_reservaciones = 0;
-    //string** matrizReservaciones = cargarMatrizReservaciones("reservaciones.txt", n_reservaciones);
-    //if(matrizReservaciones == nullptr) {
-    //  cout << "No se encontró ninguna reservación." << endl;
-    //return false;
-    //}
 
     int indiceEliminar = -1;
     // Se asume que la columna 3 (índice 3) contiene el código del alojamiento.
     for (unsigned int i = 0; i < n_reservaciones; i++) {
-        cout<<matrizReservaciones[i][2]<<endl;
+        globalIteraciones++;
         if(matrizReservaciones[i][2] == codigoAlojamiento) {
-            cout<<matrizReservaciones[i][2]<<endl;
             indiceEliminar = static_cast<int>(i);
             break;
         }
@@ -307,6 +302,7 @@ bool UdeaStay::eliminarReservacionPorAlojamiento(const string &codigoAlojamiento
         // Liberar la matriz original.
         for (unsigned int i = 0; i < n_reservaciones; i++) {
             delete[] matrizReservaciones[i];
+            globalIteraciones++;
         }
         delete[] matrizReservaciones;
         return false;
@@ -317,6 +313,7 @@ bool UdeaStay::eliminarReservacionPorAlojamiento(const string &codigoAlojamiento
 
     // Mueve los punteros de las filas que están debajo, para llenar el hueco.
     for (unsigned int i = indiceEliminar; i < n_reservaciones - 1; i++) {
+        globalIteraciones++;
         matrizReservaciones[i] = matrizReservaciones[i + 1];
     }
     // Se actualiza el número de filas válidas.
@@ -324,13 +321,6 @@ bool UdeaStay::eliminarReservacionPorAlojamiento(const string &codigoAlojamiento
     // Pone el último puntero a nullptr (ya que ahora ese espacio está libre).
     matrizReservaciones[n_reservaciones] = nullptr;
 
-
-    // **Importante:** No se reescribe el archivo aquí y tampoco se libera la memoria del arreglo
-    // (excepto la fila eliminada). Se asume que este arreglo modificado se mantendrá en memoria
-    // para luego, al terminar el programa, reescribir el archivo con la función reescribirReservacionesTXT.
-    // Podrías, por ejemplo, almacenar 'matrizReservaciones' y 'n_nueva' en variables miembro de UdeaStay.
-
-    // Por este ejemplo, simplemente retornamos true.
     return true;
 }
 
@@ -349,6 +339,7 @@ bool UdeaStay::reescribirReservacionesTXT(string** matriz, unsigned int n_filas)
         ostringstream oss;
         for (unsigned int col = 0; col < 8; col++) {
             oss << matriz[i][col] << " ";
+            globalIteraciones++;
         }
         // La columna de comentarios se añade sin modificar (puede tener espacios).
         oss << matriz[i][8];
@@ -370,6 +361,7 @@ bool UdeaStay::hayConflictoHuesped(string **reservaciones,
     if (reservaciones != nullptr) {
         for (unsigned int i = 0; i < numReservaciones; i++) {
             // Se verifica si la reservación corresponde al huésped (columna 4)
+            UdeaStay::globalIteraciones++;
             if (reservaciones[i][4] == documento) {
                 // Extraer la fecha de inicio de la reservación (columna 0)
                 string fechaStr = reservaciones[i][0];

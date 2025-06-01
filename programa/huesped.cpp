@@ -21,6 +21,7 @@ Huesped::Huesped(const string& documento, unsigned int antiguedad, double puntua
         reservas = new string[numReservas];
         for (unsigned int i = 0; i < numReservas; i++) {
             reservas[i] = reservas_in[i];
+            UdeaStay::globalIteraciones++;
         }
     } else {
         reservas = nullptr;
@@ -36,6 +37,7 @@ Huesped::Huesped(const Huesped& other)
         reservas = new string[numReservas];
         for (unsigned int i = 0; i < numReservas; i++) {
             reservas[i] = other.reservas[i];
+            UdeaStay::globalIteraciones++;
         }
     } else {
         reservas = nullptr;
@@ -96,6 +98,7 @@ void Huesped::agregarReserva(const string& codigoReserva) {
     string* nuevoArreglo = new string[numReservas + 1];
     for (unsigned int i = 0; i < numReservas; i++) {
         nuevoArreglo[i] = reservas[i];
+        UdeaStay::globalIteraciones++;
     }
     nuevoArreglo[numReservas] = codigoReserva;
     delete[] reservas;
@@ -114,6 +117,7 @@ Huesped* Huesped::autenticar(const char* nombreArchivo, const string& doc, const
     }
     string line;
     while(getline(file, line)) {
+        UdeaStay::globalIteraciones++;
         if (line.empty())
             continue;
         istringstream iss(line);
