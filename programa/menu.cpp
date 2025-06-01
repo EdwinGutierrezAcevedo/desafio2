@@ -160,7 +160,7 @@ void Menu::anfitrionMenu(string ** &reservaciones,  unsigned int & numReservacio
     }
     cout << "Autenticacion exitosa. Bienvenido, "
          << anfitrion->getDocumento() << "\n" << endl;
-
+    mostrarResumenFinal();
     int opcion = 0;
     do {
         cout << "\n--- Menu Anfitrion ---" << endl;
@@ -176,10 +176,12 @@ void Menu::anfitrionMenu(string ** &reservaciones,  unsigned int & numReservacio
         case 1:
             // Invocar la función para eliminar la reservación.
             eliminarReservacion();
+            mostrarResumenFinal();
             break;
         case 2:
             // Invocar la función para consultar las reservaciones de los alojamientos administrados.
             mostrarReservacionesAnfitrionConFecha(*anfitrion, reservaciones, numReservaciones);
+            mostrarResumenFinal();
             break;
         case 3: {
             // Opción de actualizar el histórico.
@@ -188,6 +190,7 @@ void Menu::anfitrionMenu(string ** &reservaciones,  unsigned int & numReservacio
             cout << "\nHistorico actualizado. Fecha de corte utilizada: "
                  << fechaCorte.getDia() << "/" << fechaCorte.getMes() << "/"
                  << fechaCorte.getAnio() << endl;
+            mostrarResumenFinal();
             break;
         }
         case 4:
@@ -220,6 +223,7 @@ void Menu::huespedMenu() {
         return;
     }
     cout << "Autenticación exitosa. Bienvenido, " << huesped->getDocumento() << "\n" << endl;
+    mostrarResumenFinal();
     int opcion=0;
     // Presentar submenú de funcionalidades.
     cout << "--- Funcionalidades del Huesped ---" << endl;
@@ -227,7 +231,7 @@ void Menu::huespedMenu() {
     cout << "2. Reservar alojamiento por codigo" << endl;
     cout << "3. Salir" << endl;
     cout << "Ingrese su opcion: ";
-
+    unsigned int precio=0;
     cin >> opcion;
     cin.ignore();  // Limpiar el buffer
     fecha fechaCorte(1, 1, 2025);  // Fecha de corte retornada por actualizarHistorico.
@@ -245,6 +249,7 @@ void Menu::huespedMenu() {
     unsigned int n_alojamientos = 0;
     string** matrizAlojamientos = user.cargarMatrizAlojamientos("alojamientos.txt", n_alojamientos);
     if (matrizAlojamientos == nullptr) {
+        mostrarResumenFinal();
         cout << "No se pudo cargar la matriz de alojamientos." << endl;
         delete huesped;
         return;
@@ -261,7 +266,8 @@ void Menu::huespedMenu() {
 
         // Preguntar si desea aplicar un filtro del costo máximo por noche.
         char aplicarFiltro;
-        double costoMaximo = 0;
+        unsigned int costoMaximo = 0;
+
         cout << "Desea aplicar un filtro de costo maximo por noche? (S/N): ";
         cin >> aplicarFiltro;
         if(tolower(aplicarFiltro) == 's'){
@@ -281,13 +287,14 @@ void Menu::huespedMenu() {
             // Si se aplicó un filtro por costo máximo, se verifica que el precio (columna 7) sea menor o igual.
             if(costoMaximo > 0) {
                 // Convertir el precio (almacenado en cadena) a un valor numérico.
-                double precio = stod(matrizAlojamientos[i][7]);
+                precio = stoul(matrizAlojamientos[i][7]);
                 if(precio > costoMaximo)
                     continue;
             }
             bool conflictoAlojamiento = false;
             string codigoAlojamiento = matrizAlojamientos[i][1];
             for (unsigned int j = 0; j < numReservaciones; j++) {
+                UdeaStay::globalIteraciones++;
                 if (reservaciones[j][3] == codigoAlojamiento) {
                     string fechaStr = reservaciones[j][0];
                     unsigned short rAnio = 0, rMes = 0, rDia = 0;
@@ -317,6 +324,7 @@ void Menu::huespedMenu() {
                 cout << "Direccion: "        << matrizAlojamientos[i][6] << endl;
                 cout << "Precio por noche: " << matrizAlojamientos[i][7] << endl;
                 cout << "Amenidades: "       << matrizAlojamientos[i][8] << endl;
+
             }
         }
         if(contDisponibles == 0) {
@@ -325,9 +333,11 @@ void Menu::huespedMenu() {
             delete[] indicesDisponibles;
             for (unsigned int i = 0; i < n_alojamientos; i++) {
                 delete[] matrizAlojamientos[i];
+                UdeaStay::globalIteraciones++;
             }
             delete[] matrizAlojamientos;
             delete huesped;
+            mostrarResumenFinal();
             return;
         }
         cout << "\nIngrese el numero de la opcion que desea reservar: ";
@@ -339,8 +349,7 @@ void Menu::huespedMenu() {
         }
         idxAloja = indicesDisponibles[seleccion - 1];
         delete[] indicesDisponibles;
-    }
-    else if(opcion == 2) {
+    }else if(opcion == 2) {
         // Búsqueda por código del alojamiento.
         cin.ignore();
         string codigoBuscado;
@@ -349,18 +358,24 @@ void Menu::huespedMenu() {
         for (unsigned int i = 0; i < n_alojamientos; i++) {
             if(matrizAlojamientos[i][1] == codigoBuscado) {
                 idxAloja = i;
+                //unsigned int precio=static_cast<unsigned int>(stoi(matrizAlojamientos[i][7]));
+                UdeaStay::globalIteraciones++;
                 break;
             }
         }
+
+
         if(idxAloja == -1) {
             cout << "\nNo se encontro un alojamiento con el codigo " << codigoBuscado << endl;
             for (unsigned int i = 0; i < n_alojamientos; i++) {
+                UdeaStay::globalIteraciones++;
                 delete[] matrizAlojamientos[i];
             }
             delete[] matrizAlojamientos;
             delete huesped;
             return;
         }
+        precio=stoul(matrizAlojamientos[idxAloja][7]);
         cout << "\nAlojamiento encontrado:" << endl;
         cout << "Nombre: "           << matrizAlojamientos[idxAloja][0] << endl;
         cout << "Codigo: "           << matrizAlojamientos[idxAloja][1] << endl;
@@ -377,9 +392,11 @@ void Menu::huespedMenu() {
         cout << "\nYa tiene reservaciones en las fechas solicitadas. No puede hacer la reserva." << endl;
         for (unsigned int i = 0; i < n_alojamientos; i++) {
             delete[] matrizAlojamientos[i];
+            UdeaStay::globalIteraciones++;
         }
         delete[] matrizAlojamientos;
         //delete huesped;
+        mostrarResumenFinal();
         return;
     }
 
@@ -410,14 +427,16 @@ void Menu::huespedMenu() {
 
     string anioStr = to_string(fechaEntrada.getAnio());
     string fechaEntradaStr = anioStr + "-" + mesStr + "-" + to_string(fechaEntrada.getDia());
+    //double cantidad = stod(duracion);
+    unsigned int monto = duracion*precio;
     reservaciones[numReservaciones][0] = fechaEntradaStr;
     reservaciones[numReservaciones][1] = to_string(duracion);
     reservaciones[numReservaciones][2] = codigoReserva;
     reservaciones[numReservaciones][3] = codigoAlojamientoSeleccionado;
     reservaciones[numReservaciones][4] = huesped->getDocumento();
     reservaciones[numReservaciones][5] = metodoPago;
-    reservaciones[numReservaciones][6] = "";
-    reservaciones[numReservaciones][7] = "0";
+    reservaciones[numReservaciones][6] = to_string(monto);
+    reservaciones[numReservaciones][7] = fechaEntradaStr;
     reservaciones[numReservaciones][8] = comentarios;
 
     cout << "\nReserva realizada con exito." << endl;
@@ -439,6 +458,7 @@ void Menu::huespedMenu() {
     // Liberar memoria temporal.
     for (unsigned int i = 0; i < n_alojamientos; i++) {
         delete[] matrizAlojamientos[i];
+        UdeaStay::globalIteraciones++;
     }
     delete[] matrizAlojamientos;
     if (opcion==3){
@@ -446,6 +466,7 @@ void Menu::huespedMenu() {
         return;
 
     }
+    mostrarResumenFinal();
 }
 
 // Función que solicita un rango de fechas y muestra las reservaciones de los alojamientos
@@ -454,7 +475,7 @@ void Menu::mostrarReservacionesAnfitrionConFecha(const Anfitrion &anfitrion, std
     unsigned short diaIni, mesIni, anioIni;
     unsigned short diaFin, mesFin, anioFin;
 
-    cout << "\nIngrese la fecha de inicio (dia, mes, ano, separados por espacios): ";
+    cout << "\nIngrese la fecha de inicio (dia, mes, ano) separados por espacios: ";
     cin >> diaIni >> mesIni >> anioIni;
     fecha fechaInicio(diaIni, mesIni, anioIni);
 
@@ -471,6 +492,7 @@ void Menu::mostrarReservacionesAnfitrionConFecha(const Anfitrion &anfitrion, std
 
     bool encontrado = false;
     for (unsigned int i = 0; i < n_reservaciones; i++) {
+        UdeaStay::globalIteraciones++;
         // Verificar que la reservación pertenezca a un alojamiento administrado por el anfitrión.
         // Se utiliza el campo código de alojamiento (índice 3)
         string codAlojamiento = reservaciones[i][3];
@@ -492,16 +514,18 @@ void Menu::mostrarReservacionesAnfitrionConFecha(const Anfitrion &anfitrion, std
         // Construir el objeto fecha con los valores extraídos.
         fecha fechaReserva(diaRes, mesRes, anioRes);
 
-        if (fechaReserva < fechaInicio || fechaFin < fechaReserva)
+        if (fechaReserva < fechaInicio || fechaFin < fechaReserva){
+            UdeaStay::globalIteraciones++;
             continue;
+        }
 
         // Imprimir los detalles de la reservación
         cout << "Reservacion " << i + 1 << ":" << endl;
         cout << "  Fecha Entrada:       " << reservaciones[i][0] << endl;
         cout << "  Duracion:            " << reservaciones[i][1] << endl;
-        cout << "  Codigo Reservación:  " << reservaciones[i][2] << endl;
+        cout << "  Codigo Reservacion:  " << reservaciones[i][2] << endl;
         cout << "  Codigo Alojamiento:  " << reservaciones[i][3] << endl;
-        cout << "  Documento Huésped:   " << reservaciones[i][4] << endl;
+        cout << "  Documento Huesped:   " << reservaciones[i][4] << endl;
         cout << "  Metodo de Pago:      " << reservaciones[i][5] << endl;
         cout << "  Fecha de Pago:       " << reservaciones[i][6] << endl;
         cout << "  Monto:               " << reservaciones[i][7] << endl;

@@ -28,7 +28,6 @@ Anfitrion::Anfitrion(const string& doc,
         // Copiar cada código de alojamiento y contar cada iteración.
         for (unsigned int i = 0u; i < num; i++) {
             alojamientos[i] = alojamientos_in[i];
-            cout<<alojamientos[i]<<endl;
             UdeaStay::globalIteraciones++; // Cuenta de iteración en la copia.
         }
     } else {
