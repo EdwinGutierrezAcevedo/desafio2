@@ -285,12 +285,6 @@ std::string** UdeaStay::cargarMatrizAlojamientos(const char* nombreArchivo, unsi
 }
 
 bool UdeaStay::eliminarReservacionPorAlojamiento(const string &codigoAlojamiento, string**matrizReservaciones,unsigned int & n_reservaciones) {
-    //unsigned int n_reservaciones = 0;
-    //string** matrizReservaciones = cargarMatrizReservaciones("reservaciones.txt", n_reservaciones);
-    //if(matrizReservaciones == nullptr) {
-    //  cout << "No se encontró ninguna reservación." << endl;
-    //return false;
-    //}
 
     int indiceEliminar = -1;
     // Se asume que la columna 3 (índice 3) contiene el código del alojamiento.
